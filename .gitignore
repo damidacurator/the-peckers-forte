@@ -1,0 +1,32 @@
+# Dependencies
+/backend/vendor/
+/frontend/node_modules/
+/frontend/.next/
+
+# Environment files
+/backend/.env
+/frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+/backend/storage/logs/*.log
+
+# Cache
+/backend/bootstrap/cache/*.php
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+
+# Database
+/backend/database/database.sqlite
+
+# Compiled
+*.pyc
+__pycache__/
