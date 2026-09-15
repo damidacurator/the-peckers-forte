@@ -1,9 +1,12 @@
 # Dependencies
+/node_modules/
 /backend/vendor/
 /frontend/node_modules/
+/.next/
 /frontend/.next/
 
 # Environment files
+.env*.local
 /backend/.env
 /frontend/.env.local
 
@@ -17,6 +20,8 @@ Thumbs.db
 
 # Logs
 /backend/storage/logs/*.log
+npm-debug.log*
+yarn-debug.log*
 
 # Cache
 /backend/bootstrap/cache/*.php
@@ -26,7 +31,3 @@ Thumbs.db
 
 # Database
 /backend/database/database.sqlite
-
-# Compiled
-*.pyc
-__pycache__/
