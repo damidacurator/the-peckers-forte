@@ -1,9 +1,8 @@
 # Dependencies
 /node_modules/
 /backend/vendor/
-/frontend/node_modules/
 /.next/
-/frontend/.next/
+/frontend/
 
 # Environment files
 .env*.local
