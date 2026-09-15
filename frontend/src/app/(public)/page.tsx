@@ -121,30 +121,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STATS SECTION */}
-      <section className="py-20 bg-[#0F172A] relative overflow-hidden">
-        <div className="absolute inset-0 bg-brand-darkBlue/20" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10">
-            <div className="p-4">
-              <div className="text-4xl md:text-5xl font-bold text-brand-gold mb-2">500+</div>
-              <div className="text-white/80 font-medium uppercase tracking-wider text-sm">Active Members</div>
-            </div>
-            <div className="p-4">
-              <div className="text-4xl md:text-5xl font-bold text-brand-gold mb-2">₦50M+</div>
-              <div className="text-white/80 font-medium uppercase tracking-wider text-sm">Managed Assets</div>
-            </div>
-            <div className="p-4">
-              <div className="text-4xl md:text-5xl font-bold text-brand-gold mb-2">10+</div>
-              <div className="text-white/80 font-medium uppercase tracking-wider text-sm">Years Experience</div>
-            </div>
-            <div className="p-4">
-              <div className="text-4xl md:text-5xl font-bold text-brand-gold mb-2">100%</div>
-              <div className="text-white/80 font-medium uppercase tracking-wider text-sm">Transparent</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* HOW IT WORKS */}
       <section className="py-20 bg-brand-bg">

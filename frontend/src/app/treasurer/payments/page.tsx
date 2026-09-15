@@ -7,11 +7,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function AllPaymentsPage() {
-  const data = [
-    { id: "TRX-101", member: "John Doe", type: "Contribution", amount: 50000, date: "2024-10-15", status: "COMPLETED" },
-    { id: "TRX-102", member: "Jane Smith", type: "Loan Repayment", amount: 25000, date: "2024-10-15", status: "COMPLETED" },
-    { id: "TRX-103", member: "Mike Johnson", type: "Contribution", amount: 100000, date: "2024-10-14", status: "PENDING" },
-  ];
+  const data: any[] = [];
 
   const columns = [
     { header: "Reference", accessorKey: "id" },

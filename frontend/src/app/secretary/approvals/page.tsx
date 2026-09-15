@@ -6,11 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function ApprovalsPage() {
-  const data = [
-    { id: "REG-001", name: "Emmanuel Ojo", wing: "Contribution", phone: "08012345678", date: "2024-10-15", status: "PENDING" },
-    { id: "REG-002", name: "Grace Chukwu", wing: "Investment", phone: "08098765432", date: "2024-10-14", status: "PENDING" },
-    { id: "REG-003", name: "Samuel Peters", wing: "Both", phone: "07011122233", date: "2024-10-13", status: "PENDING" },
-  ];
+  const data: any[] = [];
 
   const columns = [
     { header: "Reg ID", accessorKey: "id" },

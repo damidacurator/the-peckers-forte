@@ -8,11 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 
 export default function OutstandingPage() {
-  const data = [
-    { id: "M001", member: "Alex Brown", wing: "Contribution", months: 3, amount: 150000, lastPaid: "2024-07-15" },
-    { id: "M045", member: "David Miller", wing: "Investment", months: 1, amount: 50000, lastPaid: "2024-09-15" },
-    { id: "M102", member: "Lisa Davis", wing: "Both", months: 1, amount: 35000, lastPaid: "2024-09-15" },
-  ];
+  const data: any[] = [];
 
   const columns = [
     { header: "Member ID", accessorKey: "id" },

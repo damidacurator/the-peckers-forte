@@ -15,22 +15,22 @@ export default function AdminDashboard() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total System Users"
-          value="530"
+          value="1"
           icon={<Users className="h-6 w-6" />}
         />
         <StatCard
           title="Admin Staff"
-          value="6"
+          value="1"
           icon={<Shield className="h-6 w-6" />}
         />
         <StatCard
           title="System Health"
-          value="99.9%"
+          value="100%"
           icon={<Activity className="h-6 w-6 text-green-500" />}
         />
         <StatCard
           title="Pending Logs"
-          value="124"
+          value="0"
           icon={<Settings className="h-6 w-6" />}
         />
       </div>

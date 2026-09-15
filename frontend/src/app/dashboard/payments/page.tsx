@@ -14,11 +14,7 @@ export default function PaymentsPage() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("");
 
-  const history = [
-    { id: "TRX-101", date: "Oct 15, 2024", type: "Monthly Contribution", amount: 50000, status: "COMPLETED" },
-    { id: "TRX-100", date: "Sep 15, 2024", type: "Monthly Contribution", amount: 50000, status: "COMPLETED" },
-    { id: "TRX-099", date: "Aug 15, 2024", type: "Development Levy", amount: 10000, status: "COMPLETED" },
-  ];
+  const history: any[] = [];
 
   return (
     <div className="space-y-6">
@@ -41,10 +37,11 @@ export default function PaymentsPage() {
                 options={[
                   { value: "", label: "Select Type" },
                   { value: "contribution", label: "Monthly Contribution" },
-                  { value: "loan_rep", label: "Loan Repayment" },
+                  { value: "investment", label: "Investment Capital" },
                   { value: "levy", label: "Special Levy" }
                 ]}
-                value={type} onChange={e => setType(e.target.value)}
+                value={type}
+                onChange={e => setType(e.target.value)}
               />
               <Input 
                 label="Amount (₦)" 
@@ -52,7 +49,7 @@ export default function PaymentsPage() {
                 placeholder="0.00" 
                 value={amount} onChange={e => setAmount(e.target.value)}
               />
-              <Button className="w-full mt-4" size="lg">Pay via Paystack</Button>
+              <Button className="w-full mt-4" size="lg">Proceed to Pay</Button>
             </CardContent>
           </Card>
         </div>
@@ -74,19 +71,27 @@ export default function PaymentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {history.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-mono text-xs">{item.id}</TableCell>
-                      <TableCell>{item.date}</TableCell>
-                      <TableCell>{item.type}</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(item.amount)}</TableCell>
-                      <TableCell>
-                        <Badge variant={item.status === "COMPLETED" ? "success" : "default"}>
-                          {item.status}
-                        </Badge>
+                  {history.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-28 text-center text-muted-foreground">
+                        No payments recorded yet. Transactions will appear here after payment.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    history.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-mono text-xs">{item.id}</TableCell>
+                        <TableCell>{item.date}</TableCell>
+                        <TableCell>{item.type}</TableCell>
+                        <TableCell className="font-medium">{formatCurrency(item.amount)}</TableCell>
+                        <TableCell>
+                          <Badge variant={item.status === "COMPLETED" ? "success" : "default"}>
+                            {item.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
