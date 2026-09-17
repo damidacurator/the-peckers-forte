@@ -91,9 +91,10 @@ Access the app at `http://localhost:3001`.
 
 ---
 
-## 🔐 Default Admin Account
-
-- **Email**: `admin@thepeckersforte.com`
+## 🔐 Default Admin & Official Contact
+ 
+- **Email / Inquiries**: `admin@thepeckersfortelp.com`
+- **WhatsApp / Phone**: `+2348037221344`
 - **Role**: `Super Admin`
 - **Membership ID**: `TPF-2026-0001`
 

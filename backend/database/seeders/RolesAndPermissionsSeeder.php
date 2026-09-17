@@ -45,7 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::create(['name' => 'Guest']);
 
         $user = User::firstOrCreate(
-            ['email' => 'admin@peckersforte.com'],
+            ['email' => 'admin@thepeckersfortelp.com'],
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),

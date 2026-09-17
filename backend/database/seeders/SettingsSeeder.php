@@ -14,6 +14,8 @@ class SettingsSeeder extends Seeder
             ['key' => 'tagline', 'value' => 'Two Wings One Vision', 'group' => 'general', 'type' => 'string'],
             ['key' => 'currency', 'value' => 'NGN', 'group' => 'financial', 'type' => 'string'],
             ['key' => 'membership_id_prefix', 'value' => 'TPF', 'group' => 'general', 'type' => 'string'],
+            ['key' => 'contact_email', 'value' => 'admin@thepeckersfortelp.com', 'group' => 'general', 'type' => 'string'],
+            ['key' => 'whatsapp_phone', 'value' => '+2348037221344', 'group' => 'general', 'type' => 'string'],
         ];
 
         foreach ($settings as $setting) {

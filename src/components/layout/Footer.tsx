@@ -20,7 +20,15 @@ export function Footer() {
             <p className="text-sm font-semibold text-brand-gold">Two Wings • One Vision</p>
             <div className="flex gap-4 mt-4">
               <a href="#" className="hover:text-white"><Globe size={20} /></a>
-              <a href="#" className="hover:text-white"><MessageCircle size={20} /></a>
+              <a 
+                href="https://wa.me/2348037221344" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-emerald-400 transition-colors"
+                title="Chat on WhatsApp (+234 803 722 1344)"
+              >
+                <MessageCircle size={20} />
+              </a>
               <a href="#" className="hover:text-white"><Camera size={20} /></a>
             </div>
           </div>
@@ -59,11 +67,23 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-brand-gold shrink-0" />
-                <span>+234 800 123 4567</span>
+                <a 
+                  href="https://wa.me/2348037221344" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-brand-gold transition-colors"
+                >
+                  +234 803 722 1344 (WhatsApp)
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
-                <span>info@thepeckersforte.com</span>
+                <a 
+                  href="mailto:admin@thepeckersfortelp.com" 
+                  className="hover:text-brand-gold transition-colors"
+                >
+                  admin@thepeckersfortelp.com
+                </a>
               </li>
             </ul>
           </div>

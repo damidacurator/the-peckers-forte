@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminUsersPage() {
   const data = [
-    { id: 1, name: "Idowu Oluwadamilare", email: "admin@thepeckersforte.com", role: "SUPER ADMIN", status: "ACTIVE" },
+    { id: 1, name: "Idowu Oluwadamilare", email: "admin@thepeckersfortelp.com", role: "SUPER ADMIN", status: "ACTIVE" },
   ];
 
   const columns = [

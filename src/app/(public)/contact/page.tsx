@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Phone, Mail, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { MapPin, Phone, Mail, CheckCircle2, AlertCircle, Loader2, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
 export default function ContactPage() {
@@ -72,7 +72,7 @@ export default function ContactPage() {
           title: "Submission Error",
           description:
             errorData?.errors?.[0]?.message ||
-            "Unable to send message right now. Please try again or reach out via email.",
+            "Unable to send message right now. Please reach out to admin@thepeckersfortelp.com or WhatsApp +2348037221344.",
           type: "error",
         });
       }
@@ -117,16 +117,37 @@ export default function ContactPage() {
 
             <Card>
               <CardContent className="p-6 flex items-start gap-4">
-                <div className="bg-brand-blue/10 p-3 rounded-full text-brand-blue">
-                  <Phone size={24} />
+                <div className="bg-emerald-500/10 p-3 rounded-full text-emerald-600">
+                  <MessageCircle size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg mb-1">Phone</h3>
+                  <h3 className="font-bold text-lg mb-1">WhatsApp & Phone</h3>
                   <p className="text-gray-600 text-sm">
-                    +234 800 123 4567
-                    <br />
-                    +234 800 765 4321
+                    <a
+                      href="https://wa.me/2348037221344"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5"
+                    >
+                      +234 803 722 1344
+                    </a>
                   </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <a
+                      href="https://wa.me/2348037221344"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition"
+                    >
+                      WhatsApp Chat
+                    </a>
+                    <a
+                      href="tel:+2348037221344"
+                      className="inline-flex items-center px-2.5 py-1 rounded bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 transition"
+                    >
+                      Call Us
+                    </a>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -139,9 +160,12 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold text-lg mb-1">Email</h3>
                   <p className="text-gray-600 text-sm">
-                    info@thepeckersforte.com
-                    <br />
-                    support@thepeckersforte.com
+                    <a
+                      href="mailto:admin@thepeckersfortelp.com"
+                      className="hover:text-brand-blue font-medium break-all"
+                    >
+                      admin@thepeckersfortelp.com
+                    </a>
                   </p>
                 </div>
               </CardContent>
@@ -153,7 +177,7 @@ export default function ContactPage() {
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold mb-2">Send us a message</h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Direct message delivered securely to our executive inbox.
+                  Direct message delivered securely to our executive inbox at admin@thepeckersfortelp.com.
                 </p>
 
                 {submitted && (
