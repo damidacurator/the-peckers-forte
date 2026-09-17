@@ -41,6 +41,7 @@ export async function generateAndSendOtp(
 ): Promise<{
   success: boolean;
   maskedEmail: string;
+  deliveredTo?: string;
   message: string;
   deliveryWarning?: string;
 }> {
@@ -62,6 +63,7 @@ export async function generateAndSendOtp(
   savePendingOtps(sessions);
 
   let deliveryWarning: string | undefined;
+  let deliveredTo = cleanEmail;
 
   // Dispatch real email via server API route (/api/auth/send-otp)
   try {
@@ -76,6 +78,9 @@ export async function generateAndSendOtp(
     });
 
     const data = await res.json();
+    if (data.deliveredTo) {
+      deliveredTo = data.deliveredTo;
+    }
     if (!data.success && data.needsConfiguration) {
       deliveryWarning = data.message;
     }
@@ -85,8 +90,9 @@ export async function generateAndSendOtp(
 
   return {
     success: true,
-    maskedEmail: maskEmail(cleanEmail),
-    message: `A 6-digit security code has been sent to ${maskEmail(cleanEmail)}`,
+    maskedEmail: maskEmail(deliveredTo),
+    deliveredTo,
+    message: `A 6-digit security code has been sent to ${maskEmail(deliveredTo)}`,
     deliveryWarning,
   };
 }
