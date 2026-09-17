@@ -16,7 +16,8 @@ import {
   Settings,
   Shield,
   CreditCard,
-  CheckSquare
+  CheckSquare,
+  Send
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -35,6 +36,8 @@ export function DashboardSidebar() {
   const treasurerLinks = [
     { name: "Treasurer Dashboard", href: "/treasurer", icon: Wallet },
     { name: "All Payments", href: "/treasurer/payments", icon: CreditCard },
+    { name: "Payment Gateway", href: "/admin/gateway", icon: CreditCard },
+    { name: "Payouts / Transfers", href: "/admin/transfers", icon: Send },
     { name: "Post Charges", href: "/treasurer/charges", icon: FileText },
     { name: "Outstanding", href: "/treasurer/outstanding", icon: Users },
     { name: "Reports", href: "/treasurer/reports", icon: Receipt },
@@ -49,6 +52,8 @@ export function DashboardSidebar() {
 
   const adminLinks = [
     { name: "Admin Dashboard", href: "/admin", icon: Shield },
+    { name: "Payment Gateway", href: "/admin/gateway", icon: CreditCard },
+    { name: "Payouts / Transfers", href: "/admin/transfers", icon: Send },
     { name: "User Management", href: "/admin/users", icon: Users },
     { name: "Roles & Perms", href: "/admin/roles", icon: Shield },
     { name: "Audit Log", href: "/admin/audit-log", icon: FileText },
