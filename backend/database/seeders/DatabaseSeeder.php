@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             PaymentTypesSeeder::class,
             ChartOfAccountsSeeder::class,
             SettingsSeeder::class,
+            ExecutivesSeeder::class,
         ]);
     }
 }
