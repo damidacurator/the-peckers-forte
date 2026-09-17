@@ -172,25 +172,33 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {members.slice(0, 5).map((m) => (
-                      <tr key={m.id} className="hover:bg-slate-50">
-                        <td className="py-2.5 px-3">
-                          <p className="font-bold text-gray-900 leading-none">{m.full_name}</p>
-                          <p className="text-[10px] text-gray-500 font-mono mt-0.5">{m.email}</p>
-                        </td>
-                        <td className="py-2.5 px-3 font-black text-emerald-800">
-                          {formatCurrency(m.total_contributions || 0)}
-                        </td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-brand-blue">
-                          {m.membership_number}
-                        </td>
-                        <td className="py-2.5 px-3 text-right">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800 uppercase">
-                            {m.status}
-                          </span>
+                    {members.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="h-28 text-center text-muted-foreground text-xs">
+                          No member accounts registered yet.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      members.slice(0, 5).map((m) => (
+                        <tr key={m.id} className="hover:bg-slate-50">
+                          <td className="py-2.5 px-3">
+                            <p className="font-bold text-gray-900 leading-none">{m.full_name}</p>
+                            <p className="text-[10px] text-gray-500 font-mono mt-0.5">{m.email}</p>
+                          </td>
+                          <td className="py-2.5 px-3 font-black text-emerald-800">
+                            {formatCurrency(m.total_contributions || 0)}
+                          </td>
+                          <td className="py-2.5 px-3 font-mono text-[11px] text-brand-blue">
+                            {m.membership_number}
+                          </td>
+                          <td className="py-2.5 px-3 text-right">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-800 uppercase">
+                              {m.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -213,21 +221,27 @@ export default function AdminDashboard() {
               </Link>
             </CardHeader>
             <CardContent className="space-y-3 pt-1">
-              {logs.slice(0, 4).map((log) => (
-                <div key={log.id} className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900 flex items-center gap-1.5">
-                      {log.type === "account_creation" && <UserPlus size={12} className="text-purple-600" />}
-                      {log.type === "payment" && <CreditCard size={12} className="text-emerald-600" />}
-                      {log.action}
-                    </span>
-                    <span className="text-[10px] text-gray-400 font-mono">
-                      {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-600 leading-snug">{log.details}</p>
+              {logs.length === 0 ? (
+                <div className="py-8 text-center text-xs text-muted-foreground">
+                  No activity logs recorded yet.
                 </div>
-              ))}
+              ) : (
+                logs.slice(0, 4).map((log) => (
+                  <div key={log.id} className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-gray-900 flex items-center gap-1.5">
+                        {log.type === "account_creation" && <UserPlus size={12} className="text-purple-600" />}
+                        {log.type === "payment" && <CreditCard size={12} className="text-emerald-600" />}
+                        {log.action}
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-mono">
+                        {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-600 leading-snug">{log.details}</p>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

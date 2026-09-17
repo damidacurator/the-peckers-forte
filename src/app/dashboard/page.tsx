@@ -41,14 +41,12 @@ export default function MemberDashboard() {
     );
     setMyTransactions(userTxs);
 
-    // Sum transactions + stored member total contributions
+    // Sum transactions strictly from real successful transactions
     const txTotal = userTxs
       .filter((tx) => tx.status === "successful")
       .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
-    const baseContributions = storedMember?.total_contributions || 0;
-    // Whichever is higher or sum if needed
-    const calculatedTotal = Math.max(baseContributions, txTotal);
+    const calculatedTotal = Number(storedMember?.total_contributions || txTotal || 0);
     setTotalContributions(calculatedTotal);
   }, [user, member]);
 
@@ -103,14 +101,22 @@ export default function MemberDashboard() {
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
                 {formatCurrency(totalContributions)}
               </h2>
-              <span className="text-xs text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full">
-                Active & Increasing
+              <span
+                className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
+                  totalContributions > 0
+                    ? "text-emerald-400 bg-emerald-950/60 border-emerald-500/30"
+                    : "text-slate-300 bg-white/10 border-white/20"
+                }`}
+              >
+                {totalContributions > 0 ? "Active & Increasing" : "No Contributions Yet"}
               </span>
             </div>
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
-            Every successful payment made via your card, bank transfer, or USSD is automatically credited here in real time. Your accumulated contributions determine your dividend allocations and borrowing power.
+            {totalContributions > 0
+              ? "Every successful payment made via card, bank transfer, or USSD is automatically credited here in real time."
+              : "You have not made any contributions yet. Click the button below to make your first payment into the cooperative."}
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">

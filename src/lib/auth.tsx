@@ -367,9 +367,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       localStorage.removeItem(ACTIVE_SESSION_KEY);
+      setUser(null);
+      setMember(null);
+      window.location.replace("/login");
     }
-    setUser(null);
-    setMember(null);
   };
 
   const register = async (data: any) => {

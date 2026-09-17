@@ -177,14 +177,20 @@ export default function AdminUsersPage() {
 
                       {/* TOTAL CONTRIBUTION PAID (PROMINENTLY HIGHLIGHTED NEXT TO NAME) */}
                       <td className="py-3 px-3">
-                        <div className="inline-block bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 text-emerald-900">
-                          <p className="font-black text-xs text-emerald-800">
-                            {formatCurrency(m.total_contributions || 0)}
-                          </p>
-                          <p className="text-[10px] text-emerald-700 font-medium">
-                            {m.contribution_count || 0} deposit{m.contribution_count === 1 ? "" : "s"}
-                          </p>
-                        </div>
+                        {(m.total_contributions || 0) > 0 ? (
+                          <div className="inline-block bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1 text-emerald-900">
+                            <p className="font-black text-xs text-emerald-800">
+                              {formatCurrency(m.total_contributions)}
+                            </p>
+                            <p className="text-[10px] text-emerald-700 font-medium">
+                              {m.contribution_count || 1} deposit{m.contribution_count === 1 ? "" : "s"}
+                            </p>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs font-mono">
+                            ₦0.00 (No contributions)
+                          </span>
+                        )}
                       </td>
 
                       {/* Membership ID */}

@@ -51,8 +51,17 @@ export function DashboardHeader() {
           </div>
         )}
         
-        <Button variant="ghost" size="icon" onClick={() => logout()} title="Logout">
-          <LogOut size={18} className="text-muted-foreground hover:text-red-600 transition" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={async () => {
+            await logout();
+          }}
+          title="Sign out of THE PECKERS FORTE"
+          className="text-xs text-muted-foreground hover:text-red-600 hover:bg-red-50 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition"
+        >
+          <LogOut size={16} />
+          <span className="hidden sm:inline font-semibold">Log out</span>
         </Button>
       </div>
     </header>
