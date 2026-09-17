@@ -23,10 +23,10 @@ class ExecutivesSeeder extends Seeder
             ],
             [
                 'name' => 'Oyindamola Idowu',
-                'position' => 'Second Lead Developer',
+                'position' => 'Lead Developer',
                 'wing' => 'both',
                 'photo' => '/images/executives/oyindamola-idowu-square.png',
-                'bio' => 'Second Lead Developer driving technology implementation across THE PECKERS FORTE platforms.',
+                'bio' => 'Lead Developer driving technology implementation across THE PECKERS FORTE platforms.',
                 'is_current' => true,
                 'sort_order' => 2,
                 'created_at' => now(),

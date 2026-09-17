@@ -14,7 +14,7 @@ const executives = [
   { 
     id: 2, 
     name: "Oyindamola Idowu", 
-    position: "Second Lead Developer", 
+    position: "Lead Developer", 
     wing: "BOTH",
     image: "/images/executives/oyindamola-idowu-square.png"
   },
