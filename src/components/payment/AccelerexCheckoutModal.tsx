@@ -20,6 +20,7 @@ import {
   saveTransaction,
   GatewayTransaction
 } from "@/lib/accelerex";
+import { recordMemberContribution } from "@/lib/members";
 
 interface AccelerexCheckoutModalProps {
   isOpen: boolean;
@@ -140,6 +141,11 @@ export function AccelerexCheckoutModal({
       };
 
       saveTransaction(tx);
+      recordMemberContribution(tx.customerEmail, tx.amount, {
+        reference: tx.reference,
+        type: tx.type,
+        customerName: tx.customerName
+      });
       setGeneratedTx(tx);
       setStep("success");
       if (onSuccess) onSuccess(tx);

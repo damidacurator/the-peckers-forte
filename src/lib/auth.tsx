@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { post } from "./api";
+import { logAuditEvent } from "./members";
 
 export interface UserData {
   id: string | number;
@@ -391,10 +392,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       full_name: fullName,
       phone: data.phone || "",
       wing: data.wing || "both",
+      category: data.category || "standard",
       membership_number: membershipNumber,
       roles: isCoreAdmin
         ? ["Super Admin", "ADMIN", "Treasurer", "Secretary", "Executive"]
         : ["Ordinary Member"],
+      total_contributions: 0,
+      contribution_count: 0,
       created_at: new Date().toISOString(),
     };
 
@@ -405,6 +409,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...existingUsers.filter((u) => u.email.toLowerCase() !== cleanEmail),
     ];
     saveLocalUsers(updatedUsers);
+
+    // Audit Log Entry
+    logAuditEvent(
+      "New Member Account Registered",
+      fullName,
+      cleanEmail,
+      `New member account registered: ${cleanEmail} (Assigned ID: ${membershipNumber}, Wing: ${newUserData.wing})`,
+      "account_creation"
+    );
 
     // Attempt Supabase sign up in the background
     try {
