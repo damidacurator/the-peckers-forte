@@ -76,11 +76,11 @@ export default function LoginPage() {
         <div className="flex flex-col sm:flex-row gap-2 pt-1">
           <button
             type="button"
-            onClick={() => handleQuickAdminLogin("admin@thepeckersforte.com")}
+            onClick={() => handleQuickAdminLogin("admin@thepeckerfortelp.com")}
             disabled={loading}
             className="flex-1 py-2 px-3 bg-brand-gold text-brand-darkBlue rounded-lg text-xs font-bold hover:bg-yellow-400 transition flex items-center justify-center gap-1.5 shadow"
           >
-            <KeyRound size={14} /> Log in as admin@thepeckersforte.com
+            <KeyRound size={14} /> Log in as admin@thepeckerfortelp.com
           </button>
         </div>
       </div>

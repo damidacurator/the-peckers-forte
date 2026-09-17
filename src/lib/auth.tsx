@@ -39,8 +39,10 @@ interface AuthContextType {
 }
 
 export const CORE_ADMIN_EMAILS = [
-  "admin@thepeckersforte.com",
+  "admin@thepeckerfortelp.com",
   "admin@thepeckersfortelp.com",
+  "admin@thepeckersforte.com",
+  "admin@thepeckerforte.com",
   "dami@thepeckersforte.com"
 ];
 

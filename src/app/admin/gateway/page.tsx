@@ -66,7 +66,7 @@ export default function AdminGatewayPage() {
   const [testAmount, setTestAmount] = useState(5000);
   const [testPurpose, setTestPurpose] = useState("Monthly Contribution");
   const [testPayerName, setTestPayerName] = useState("Akinola Idowu");
-  const [testPayerEmail, setTestPayerEmail] = useState("admin@thepeckersfortelp.com");
+  const [testPayerEmail, setTestPayerEmail] = useState("admin@thepeckerfortelp.com");
   const [lastTx, setLastTx] = useState<GatewayTransaction | null>(null);
 
   // Transaction history

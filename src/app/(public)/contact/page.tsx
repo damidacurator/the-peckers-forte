@@ -49,7 +49,7 @@ export default function ContactPage() {
           email: formData.email,
           subject: formData.subject,
           message: formData.message,
-          to: "admin@thepeckersfortelp.com",
+          to: "admin@thepeckerfortelp.com",
         }),
       });
 
@@ -73,7 +73,7 @@ export default function ContactPage() {
           title: "Submission Error",
           description:
             errorData?.errors?.[0]?.message ||
-            "Unable to send message right now. Please reach out to admin@thepeckersfortelp.com or WhatsApp +2348037221344.",
+            "Unable to send message right now. Please reach out to admin@thepeckerfortelp.com or WhatsApp +2348037221344.",
           type: "error",
         });
       }
@@ -162,10 +162,10 @@ export default function ContactPage() {
                   <h3 className="font-bold text-lg mb-1">Email</h3>
                   <p className="text-gray-600 text-sm">
                     <a
-                      href="mailto:admin@thepeckersfortelp.com"
+                      href="mailto:admin@thepeckerfortelp.com"
                       className="hover:text-brand-blue font-medium break-all"
                     >
-                      admin@thepeckersfortelp.com
+                      admin@thepeckerfortelp.com
                     </a>
                   </p>
                 </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold mb-2">Send us a message</h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Direct message delivered securely to our executive inbox at admin@thepeckersfortelp.com.
+                  Direct message delivered securely to our executive inbox at admin@thepeckerfortelp.com.
                 </p>
 
                 {submitted && (

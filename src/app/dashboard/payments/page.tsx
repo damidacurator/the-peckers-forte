@@ -41,7 +41,7 @@ export default function PaymentsPage() {
   const customerName = member
     ? `${member.firstName} ${member.lastName}`
     : user?.name || "Valued Member";
-  const customerEmail = user?.email || "admin@thepeckersfortelp.com";
+  const customerEmail = user?.email || "admin@thepeckerfortelp.com";
 
   return (
     <div className="space-y-6 max-w-6xl pb-12">

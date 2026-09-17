@@ -79,10 +79,10 @@ export function Footer() {
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
                 <a 
-                  href="mailto:admin@thepeckersfortelp.com" 
+                  href="mailto:admin@thepeckerfortelp.com" 
                   className="hover:text-brand-gold transition-colors"
                 >
-                  admin@thepeckersfortelp.com
+                  admin@thepeckerfortelp.com
                 </a>
               </li>
             </ul>

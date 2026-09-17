@@ -203,7 +203,7 @@ export default function RegisterPage() {
               label="Email Address"
               type="email"
               required
-              placeholder="e.g. admin@thepeckersforte.com"
+              placeholder="e.g. admin@thepeckerfortelp.com"
               value={formData.email}
               onChange={(e) => updateForm("email", e.target.value)}
             />

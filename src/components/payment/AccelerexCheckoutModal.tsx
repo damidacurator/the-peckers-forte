@@ -129,7 +129,7 @@ export function AccelerexCheckoutModal({
         currency: "NGN",
         type: paymentType,
         customerName: customerName || "Valued Member",
-        customerEmail: customerEmail || "admin@thepeckersfortelp.com",
+        customerEmail: customerEmail || "admin@thepeckerfortelp.com",
         paymentMethod: method,
         status: "successful",
         environment: config.environment,
