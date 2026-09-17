@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, CORE_ADMIN_EMAILS } from "@/lib/auth";
@@ -16,8 +16,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertCircle,
-  RefreshCw,
-  KeyRound
+  KeyRound,
+  Info
 } from "lucide-react";
 import { generateAndSendOtp, verifyOtpCode, maskEmail } from "@/lib/otp";
 
@@ -34,12 +34,12 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  // Step 2: OTP state
-  const [otp, setOtp] = useState("");
+  // Step 2: OTP State (6 distinct boxes)
+  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
   const [maskedUserEmail, setMaskedUserEmail] = useState("");
-  const [countdown, setCountdown] = useState(600); // 10 minutes
-  const [resendCooldown, setResendCooldown] = useState(30);
-  const [backupCode, setBackupCode] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(600); // 10 minutes expiry
+  const [resendCooldown, setResendCooldown] = useState(60); // 1 minute resend cooldown
+  const [deliveryWarning, setDeliveryWarning] = useState<string | null>(null);
 
   // Status & loading
   const [error, setError] = useState("");
@@ -47,7 +47,10 @@ export default function LoginPage() {
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  // Countdown timers for OTP expiry and resend cooldown
+  // Input refs for 6-digit boxes
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Countdown timers for OTP expiry and 1-minute resend cooldown
   useEffect(() => {
     let interval: any;
     if (step === "otp") {
@@ -59,7 +62,7 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [step]);
 
-  // Handle Step 1: Credential validation & OTP Dispatch
+  // Handle Step 1: Credentials verification & Real OTP dispatch
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -73,15 +76,24 @@ export default function LoginPage() {
         return;
       }
 
-      // Valid credentials! Dispatch 6-digit OTP code to the user's Gmail
+      // Valid credentials! Dispatch real 6-digit OTP code to user's Gmail
       const otpRes = await generateAndSendOtp(email, credCheck.fullName);
       setMaskedUserEmail(otpRes.maskedEmail);
-      if (otpRes.backupCode) {
-        setBackupCode(otpRes.backupCode);
+      if (otpRes.deliveryWarning) {
+        setDeliveryWarning(otpRes.deliveryWarning);
+      } else {
+        setDeliveryWarning(null);
       }
+
       setCountdown(600);
-      setResendCooldown(30);
+      setResendCooldown(60); // 1 minute resend timer
+      setOtpDigits(["", "", "", "", "", ""]);
       setStep("otp");
+
+      // Auto-focus first digit box
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 100);
     } catch (err: any) {
       setError(err?.message || "Authentication error. Please try again.");
     } finally {
@@ -89,42 +101,91 @@ export default function LoginPage() {
     }
   };
 
-  // Handle Step 2: OTP Verification & Session Establishment
+  // Handle individual digit input in the 6 boxes
+  const handleDigitChange = (index: number, value: string) => {
+    const cleanVal = value.replace(/\D/g, "");
+    if (!cleanVal) {
+      const updated = [...otpDigits];
+      updated[index] = "";
+      setOtpDigits(updated);
+      return;
+    }
+
+    // If pasted multiple digits
+    if (cleanVal.length > 1) {
+      const pastedDigits = cleanVal.slice(0, 6).split("");
+      const updated = [...otpDigits];
+      for (let i = 0; i < 6; i++) {
+        if (pastedDigits[i]) {
+          updated[i] = pastedDigits[i];
+        }
+      }
+      setOtpDigits(updated);
+      const nextFocus = Math.min(pastedDigits.length, 5);
+      inputRefs.current[nextFocus]?.focus();
+      return;
+    }
+
+    // Single digit entry
+    const updated = [...otpDigits];
+    updated[index] = cleanVal[cleanVal.length - 1];
+    setOtpDigits(updated);
+
+    // Auto-advance to next box
+    if (index < 5 && cleanVal) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Handle keyboard navigation (Backspace & Arrow keys)
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Handle Step 2: OTP Verification & Final Login
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!otp || otp.trim().length !== 6) {
-      setError("Please enter the complete 6-digit verification code.");
+    const fullOtp = otpDigits.join("");
+    if (fullOtp.length !== 6) {
+      setError("Please enter the complete 6-digit code.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const verifyResult = verifyOtpCode(email, otp);
+      const verifyResult = verifyOtpCode(email, fullOtp);
       if (!verifyResult.success) {
-        setError(verifyResult.message);
+        // Strict User Requirement: "If the OTP is wrong, show 'Invalid OTP'."
+        setError(verifyResult.message || "Invalid OTP");
         setLoading(false);
         return;
       }
 
-      // OTP Verified Successfully! Complete login session
+      // OTP verified successfully! Complete session
       await completeLoginAfterOtp(email);
 
-      // Smart redirection: if core admin, redirect to admin gateway; otherwise member dashboard
+      // Routing
       if (CORE_ADMIN_EMAILS.includes(email.trim().toLowerCase())) {
         router.push("/admin/gateway");
       } else {
         router.push("/dashboard");
       }
     } catch (err: any) {
-      setError(err?.message || "Failed to finalize session. Please try again.");
+      setError(err?.message || "Failed to finalize session.");
       setLoading(false);
     }
   };
 
-  // Handle Resend OTP Code
+  // Handle Resend OTP (Every 1 minute)
   const handleResendOtp = async () => {
     if (resendCooldown > 0 || resending) return;
     setResending(true);
@@ -134,11 +195,13 @@ export default function LoginPage() {
     try {
       const otpRes = await generateAndSendOtp(email);
       setResendSuccess(true);
-      setResendCooldown(45);
-      if (otpRes.backupCode) {
-        setBackupCode(otpRes.backupCode);
+      setResendCooldown(60); // Reset 1-minute countdown
+      setOtpDigits(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.focus();
+      if (otpRes.deliveryWarning) {
+        setDeliveryWarning(otpRes.deliveryWarning);
       }
-      setTimeout(() => setResendSuccess(false), 4000);
+      setTimeout(() => setResendSuccess(false), 5000);
     } catch (err: any) {
       setError("Failed to resend code. Please try again.");
     } finally {
@@ -179,7 +242,7 @@ export default function LoginPage() {
               label="Email address"
               type="email"
               required
-              placeholder="e.g. admin@thepeckerfortelp.com"
+              placeholder="e.g. yourname@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -244,7 +307,7 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* STEP 2: TWO-STEP VERIFICATION (OTP) SCREEN */}
+      {/* STEP 2: TWO-STEP VERIFICATION (OTP IN BOXES) SCREEN */}
       {step === "otp" && (
         <div className="space-y-6 animate-in fade-in zoom-in-95 duration-200">
           <div className="text-center space-y-2">
@@ -253,7 +316,7 @@ export default function LoginPage() {
             </div>
             <h3 className="text-xl font-bold text-gray-900">Two-Step Verification</h3>
             <p className="text-xs text-gray-600 max-w-sm mx-auto">
-              We have sent a 6-digit verification code to your registered Gmail address:
+              We have sent a 6-digit security code to your registered email:
             </p>
             <p className="font-mono font-bold text-sm text-brand-blue bg-blue-50/80 py-1.5 px-3 rounded-lg inline-block border border-blue-100">
               {maskedUserEmail || email}
@@ -261,8 +324,8 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-xs font-medium flex items-start gap-2 animate-in fade-in">
-              <AlertCircle size={16} className="shrink-0 mt-0.5 text-red-600" />
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 animate-in fade-in">
+              <AlertCircle size={16} className="shrink-0 text-red-600" />
               <span>{error}</span>
             </div>
           )}
@@ -270,29 +333,62 @@ export default function LoginPage() {
           {resendSuccess && (
             <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-lg text-xs font-medium flex items-center gap-2 animate-in fade-in">
               <CheckCircle2 size={16} className="text-emerald-600" />
-              <span>A fresh 6-digit security code has been sent to your email.</span>
+              <span>A fresh security code has been sent to your email.</span>
             </div>
           )}
 
-          <form onSubmit={handleOtpSubmit} className="space-y-4">
+          {deliveryWarning && (
+            <div className="bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 rounded-xl text-xs space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                <Info size={15} className="text-amber-700 shrink-0" />
+                <span>Notice Regarding Outgoing Email Delivery</span>
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                To receive verification emails directly into any Gmail inbox, add your free <strong>Resend API Key</strong> or <strong>Gmail App Password</strong> to your environment variables.
+              </p>
+            </div>
+          )}
+
+          <form onSubmit={handleOtpSubmit} className="space-y-6">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 text-center mb-2">
-                Enter 6-Digit Security Code
+              <label className="block text-xs font-semibold text-gray-700 text-center mb-3">
+                Enter the 6-Digit Code from your Gmail
               </label>
-              <input
-                type="text"
-                maxLength={6}
-                required
-                autoFocus
-                placeholder="••••••"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                className="w-56 mx-auto px-4 py-3 rounded-xl border-2 border-brand-blue text-center text-2xl font-mono tracking-widest block focus:outline-none focus:ring-4 focus:ring-brand-blue/20 shadow-inner"
-              />
-              <div className="flex items-center justify-between text-xs text-gray-500 mt-2 px-6">
+
+              {/* 6 INTERACTIVE OTP DIGIT BOXES */}
+              <div className="flex justify-center items-center gap-2 sm:gap-3">
+                {otpDigits.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    ref={(el) => {
+                      inputRefs.current[idx] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleDigitChange(idx, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(idx, e)}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const pasted = e.clipboardData.getData("text");
+                      handleDigitChange(idx, pasted);
+                    }}
+                    className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-mono font-bold rounded-xl border-2 transition focus:outline-none focus:ring-4 shadow-sm ${
+                      digit
+                        ? "border-brand-blue bg-blue-50/30 text-gray-900"
+                        : "border-gray-300 bg-white text-gray-700 focus:border-brand-blue focus:ring-brand-blue/20"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* TIMERS: 10-MIN EXPIRY & 1-MIN RESEND */}
+              <div className="flex items-center justify-between text-xs text-gray-500 mt-4 px-2">
                 <span>
-                  Expires in: <strong className="font-mono text-gray-700">{formatTimer(countdown)}</strong>
+                  Code expires in: <strong className="font-mono text-gray-700">{formatTimer(countdown)}</strong>
                 </span>
+
                 <button
                   type="button"
                   onClick={handleResendOtp}
@@ -306,42 +402,20 @@ export default function LoginPage() {
                   {resending
                     ? "Sending..."
                     : resendCooldown > 0
-                    ? `Resend in ${resendCooldown}s`
+                    ? `Resend code in ${resendCooldown}s`
                     : "Resend Code"}
                 </button>
               </div>
             </div>
 
-            {/* Instant Sandbox / Offline Delivery Helper (Ensures user is never stranded) */}
-            {backupCode && (
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Mail size={13} className="text-brand-blue" />
-                    Security Code Delivery Preview:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setOtp(backupCode)}
-                    className="text-[11px] text-brand-blue hover:underline font-bold"
-                  >
-                    Click to Autofill
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Code sent to Gmail: <span className="font-mono font-bold text-gray-900">{backupCode}</span>
-                </p>
-              </div>
-            )}
-
             <Button
               type="submit"
-              disabled={loading || otp.length !== 6}
+              disabled={loading || otpDigits.join("").length !== 6}
               className="w-full py-5 bg-brand-blue hover:bg-brand-darkBlue text-white font-bold shadow-md transition disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" /> Verifying Code...
+                  <Loader2 size={16} className="animate-spin" /> Verifying OTP...
                 </span>
               ) : (
                 "Verify & Sign In"
@@ -349,12 +423,12 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="text-center pt-2">
+          <div className="text-center pt-1">
             <button
               type="button"
               onClick={() => {
                 setStep("credentials");
-                setOtp("");
+                setOtpDigits(["", "", "", "", "", ""]);
                 setError("");
               }}
               className="text-xs text-gray-500 hover:text-gray-800 font-semibold flex items-center justify-center gap-1 mx-auto transition"

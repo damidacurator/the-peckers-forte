@@ -9,7 +9,6 @@ export interface PendingOtp {
 }
 
 const OTP_STORAGE_KEY = "tpf_pending_otp_sessions";
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/moeqgrqd";
 
 function getPendingOtps(): Record<string, PendingOtp> {
   if (typeof window === "undefined") return {};
@@ -39,50 +38,56 @@ export function maskEmail(email: string): string {
 export async function generateAndSendOtp(
   email: string,
   userFullName?: string
-): Promise<{ success: boolean; maskedEmail: string; message: string; backupCode?: string }> {
+): Promise<{
+  success: boolean;
+  maskedEmail: string;
+  message: string;
+  deliveryWarning?: string;
+}> {
   const cleanEmail = email.trim().toLowerCase();
-  
+
   // Generate random 6-digit numeric code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-  // Store pending session
+  // Store pending session in client storage for verification
   const sessions = getPendingOtps();
   sessions[cleanEmail] = {
     email: cleanEmail,
     code,
     expiresAt,
     attempts: 0,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
   savePendingOtps(sessions);
 
-  // Dispatch real email to user's Gmail using Formspree endpoint
+  let deliveryWarning: string | undefined;
+
+  // Dispatch real email via server API route (/api/auth/send-otp)
   try {
-    fetch(FORMSPREE_ENDPOINT, {
+    const res = await fetch("/api/auth/send-otp", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: cleanEmail,
-        subject: `🔐 Your Two-Step Verification Code: ${code} - THE PECKERS FORTE`,
-        message: `Hello ${userFullName || "Valued User"},\n\nYour Two-Step Verification (OTP) security code for signing into THE PECKERS FORTE is:\n\n========================================\n👉  ${code}  👈\n========================================\n\nThis verification code expires in 10 minutes.\n\nIf you did not request this login attempt, please protect your account immediately.\n\nTHE PECKERS FORTE COOPERATIVE\nadmin@thepeckerfortelp.com`,
-        to: cleanEmail,
+        code,
+        fullName: userFullName,
       }),
-    }).catch((err) => {
-      console.warn("Formspree dispatch error (safe fallback):", err);
     });
-  } catch (e) {
-    console.warn("Background OTP send warning:", e);
+
+    const data = await res.json();
+    if (!data.success && data.needsConfiguration) {
+      deliveryWarning = data.message;
+    }
+  } catch (err: any) {
+    console.warn("Error triggering send-otp API:", err);
   }
 
   return {
     success: true,
     maskedEmail: maskEmail(cleanEmail),
-    message: `Security code sent to ${maskEmail(cleanEmail)}`,
-    backupCode: code // Exposed for development/sandbox fallback
+    message: `A 6-digit security code has been sent to ${maskEmail(cleanEmail)}`,
+    deliveryWarning,
   };
 }
 
@@ -117,21 +122,22 @@ export function verifyOtpCode(
     savePendingOtps(sessions);
     return {
       success: false,
-      message: "Too many failed attempts. For security, please request a fresh code.",
+      message: "Too many failed attempts. Please request a new code.",
     };
   }
 
+  // Exact match validation
   if (session.code !== cleanCode) {
     session.attempts += 1;
     sessions[cleanEmail] = session;
     savePendingOtps(sessions);
     return {
       success: false,
-      message: `Invalid verification code. Please check your email and try again (${5 - session.attempts} attempts remaining).`,
+      message: "Invalid OTP",
     };
   }
 
-  // Success! Invalidate OTP session
+  // Success! Clear session
   delete sessions[cleanEmail];
   savePendingOtps(sessions);
 
