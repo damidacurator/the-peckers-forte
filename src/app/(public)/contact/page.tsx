@@ -49,6 +49,7 @@ export default function ContactPage() {
           email: formData.email,
           subject: formData.subject,
           message: formData.message,
+          to: "admin@thepeckersfortelp.com",
         }),
       });
 

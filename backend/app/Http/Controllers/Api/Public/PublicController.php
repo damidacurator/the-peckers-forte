@@ -76,6 +76,7 @@ class PublicController extends Controller
                 '_replyto' => $validated['email'],
                 'subject' => $validated['subject'] ?? 'New Contact Form Inquiry - THE PECKERS FORTE',
                 'message' => $validated['message'],
+                'to' => 'admin@thepeckersfortelp.com',
             ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Formspree contact forward failed: ' . $e->getMessage());
