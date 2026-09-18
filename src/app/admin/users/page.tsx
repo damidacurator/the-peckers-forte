@@ -166,19 +166,27 @@ export default function AdminUsersPage() {
                     <tr key={m.id} className="hover:bg-slate-50/80 transition-colors">
                       {/* Name & Email */}
                       <td className="py-3 px-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="h-8 w-8 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-xs">
-                            {m.first_name?.[0]?.toUpperCase() || m.email[0]?.toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900 text-xs leading-none">
-                              {m.full_name}
-                            </p>
-                            <p className="text-[11px] text-gray-500 font-mono mt-0.5">
-                              {m.email}
-                            </p>
-                          </div>
-                        </div>
+                        {(() => {
+                          const cleanName = (m.full_name && !m.full_name.toLowerCase().includes("undefined") && m.full_name.trim().length > 0)
+                            ? m.full_name.trim()
+                            : [m.first_name, m.surname].filter(x => x && !x.toLowerCase().includes("undefined") && x.trim().length > 0).join(" ") || m.email.split("@")[0];
+                          const initial = (cleanName[0] || m.email[0] || "M").toUpperCase();
+                          return (
+                            <div className="flex items-center gap-2.5">
+                              <div className="h-8 w-8 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-xs">
+                                {initial}
+                              </div>
+                              <div>
+                                <p className="font-bold text-gray-900 text-xs leading-none">
+                                  {cleanName}
+                                </p>
+                                <p className="text-[11px] text-gray-500 font-mono mt-0.5">
+                                  {m.email}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
 
                       {/* TOTAL CONTRIBUTION PAID (PROMINENTLY HIGHLIGHTED NEXT TO NAME) */}
