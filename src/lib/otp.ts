@@ -42,6 +42,8 @@ export async function generateAndSendOtp(
   success: boolean;
   maskedEmail: string;
   deliveredTo?: string;
+  code: string;
+  isDevMode?: boolean;
   message: string;
   deliveryWarning?: string;
 }> {
@@ -64,6 +66,7 @@ export async function generateAndSendOtp(
 
   let deliveryWarning: string | undefined;
   let deliveredTo = cleanEmail;
+  let isDevMode = false;
 
   // Dispatch real email via server API route (/api/auth/send-otp)
   try {
@@ -81,17 +84,23 @@ export async function generateAndSendOtp(
     if (data.deliveredTo) {
       deliveredTo = data.deliveredTo;
     }
-    if (!data.success && data.needsConfiguration) {
-      deliveryWarning = data.message;
+    if (data.provider === "Direct Verification Dispatch" || data.devCode || (!data.success && data.needsConfiguration)) {
+      isDevMode = true;
+      if (data.details) {
+        deliveryWarning = data.details;
+      }
     }
   } catch (err: any) {
     console.warn("Error triggering send-otp API:", err);
+    isDevMode = true;
   }
 
   return {
     success: true,
     maskedEmail: maskEmail(deliveredTo),
     deliveredTo,
+    code,
+    isDevMode,
     message: `A 6-digit security code has been sent to ${maskEmail(deliveredTo)}`,
     deliveryWarning,
   };

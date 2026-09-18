@@ -46,6 +46,7 @@ function LoginForm() {
   const [countdown, setCountdown] = useState(600); // 10 minutes expiry
   const [resendCooldown, setResendCooldown] = useState(60); // 1 minute resend cooldown
   const [deliveryWarning, setDeliveryWarning] = useState<string | null>(null);
+  const [testOtpCode, setTestOtpCode] = useState<string | null>(null);
 
   // Status & loading
   const [error, setError] = useState("");
@@ -85,6 +86,11 @@ function LoginForm() {
       // Valid credentials! Dispatch real 6-digit OTP code to user's Gmail
       const otpRes = await generateAndSendOtp(email, credCheck.fullName);
       setMaskedUserEmail(otpRes.maskedEmail);
+      if (otpRes.isDevMode && otpRes.code) {
+        setTestOtpCode(otpRes.code);
+      } else {
+        setTestOtpCode(null);
+      }
       if (otpRes.deliveryWarning) {
         setDeliveryWarning(otpRes.deliveryWarning);
       } else {
@@ -226,6 +232,9 @@ function LoginForm() {
     try {
       const otpRes = await generateAndSendOtp(email);
       setResendSuccess(true);
+      if (otpRes.isDevMode && otpRes.code) {
+        setTestOtpCode(otpRes.code);
+      }
       setResendCooldown(60); // Reset 1-minute countdown
       setOtpDigits(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
@@ -421,6 +430,31 @@ function LoginForm() {
               <p className="text-[11px] text-amber-800 leading-relaxed">
                 To receive verification emails directly into any Gmail inbox, add your free <strong>Resend API Key</strong> or <strong>Gmail App Password</strong> to your environment variables.
               </p>
+            </div>
+          )}
+
+          {testOtpCode && (
+            <div className="p-3.5 bg-blue-50/90 border border-blue-200 rounded-xl text-xs text-blue-950 flex items-center justify-between animate-in fade-in">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 font-bold text-brand-blue">
+                  <span>Verification Code:</span>
+                  <span className="font-mono text-base font-black tracking-widest bg-white px-2.5 py-0.5 rounded-md border border-blue-300 text-brand-darkBlue shadow-xs">
+                    {testOtpCode}
+                  </span>
+                </div>
+                <p className="text-[10px] text-blue-700">
+                  (Test mode active: Click Quick Fill or enter this code below)
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setOtpDigits(testOtpCode.split(""));
+                }}
+                className="text-[11px] font-bold text-white bg-brand-blue hover:bg-brand-darkBlue px-3 py-1.5 rounded-lg shadow-xs transition shrink-0 ml-2 cursor-pointer"
+              >
+                Quick Fill
+              </button>
             </div>
           )}
 

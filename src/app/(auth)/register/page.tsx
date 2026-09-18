@@ -47,6 +47,7 @@ export default function RegisterPage() {
   const [otpCountdown, setOtpCountdown] = useState(600);
   const [resendCooldown, setResendCooldown] = useState(60);
   const [isAccountActivated, setIsAccountActivated] = useState(false);
+  const [testOtpCode, setTestOtpCode] = useState<string | null>(null);
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [formData, setFormData] = useState({
@@ -138,7 +139,12 @@ export default function RegisterPage() {
 
     try {
       // Dispatch verification code to THAT user's individual Gmail
-      await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      const otpRes = await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      if (otpRes.isDevMode && otpRes.code) {
+        setTestOtpCode(otpRes.code);
+      } else {
+        setTestOtpCode(null);
+      }
       setOtpCountdown(600);
       setResendCooldown(60);
       setStep(6); // Step 6 = "Waiting for Gmail Verification"
@@ -169,7 +175,12 @@ export default function RegisterPage() {
 
       // If core admin, they can move to verification or bypass
       setLoading(true);
-      await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      const otpRes = await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      if (otpRes.isDevMode && otpRes.code) {
+        setTestOtpCode(otpRes.code);
+      } else {
+        setTestOtpCode(null);
+      }
       setLoading(false);
       setStep(6);
     }
@@ -270,7 +281,12 @@ export default function RegisterPage() {
     if (resendCooldown > 0 || loading) return;
     setError("");
     try {
-      await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      const otpRes = await generateAndSendOtp(formData.email, `${formData.firstName} ${formData.lastName}`);
+      if (otpRes.isDevMode && otpRes.code) {
+        setTestOtpCode(otpRes.code);
+      } else {
+        setTestOtpCode(null);
+      }
       setResendCooldown(60);
       setOtpDigits(["", "", "", "", "", ""]);
       otpInputRefs.current[0]?.focus();
@@ -702,6 +718,31 @@ export default function RegisterPage() {
                   Enter the 6-digit code sent to <strong>{formData.email}</strong> below to confirm your account ownership.
                 </p>
               </div>
+
+              {testOtpCode && (
+                <div className="p-3.5 bg-blue-50/90 border border-blue-200 rounded-xl text-xs text-blue-950 flex items-center justify-between animate-in fade-in">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 font-bold text-brand-blue">
+                      <span>Verification Code:</span>
+                      <span className="font-mono text-base font-black tracking-widest bg-white px-2.5 py-0.5 rounded-md border border-blue-300 text-brand-darkBlue shadow-xs">
+                        {testOtpCode}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-blue-700">
+                      (Test mode active: Click Quick Fill or enter this code above)
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpDigits(testOtpCode.split(""));
+                    }}
+                    className="text-[11px] font-bold text-white bg-brand-blue hover:bg-brand-darkBlue px-3 py-1.5 rounded-lg shadow-xs transition shrink-0 ml-2 cursor-pointer"
+                  >
+                    Quick Fill
+                  </button>
+                </div>
+              )}
 
               <form onSubmit={handleVerifyGmailAndActivate} className="space-y-5">
                 <div>
