@@ -41,23 +41,34 @@ function sanitizeStoredUsers(users: any[]): MemberAccount[] {
   // Discard any previous mock user IDs like mem-002 or mem-003
   return users
     .filter((u) => u && u.email && u.id !== "mem-002" && u.id !== "mem-003")
-    .map((u) => ({
-      id: u.id || "usr_" + Date.now(),
-      email: u.email,
-      password: u.password,
-      first_name: u.first_name || u.firstName || "",
-      surname: u.surname || u.lastName || "",
-      full_name: u.full_name || `${u.first_name || ""} ${u.surname || ""}`.trim() || u.email,
-      phone: u.phone || "",
-      wing: u.wing || "BOTH",
-      category: u.category || "standard",
-      membership_number: u.membership_number || "TPF-2026-0001",
-      roles: u.roles || ["Ordinary Member"],
-      total_contributions: Number(u.total_contributions) || 0,
-      contribution_count: Number(u.contribution_count) || 0,
-      created_at: u.created_at || new Date().toISOString(),
-      status: u.status || "active",
-    }));
+    .map((u) => {
+      const rawFirst = (u.first_name || u.firstName || "").toString();
+      const rawLast = (u.surname || u.lastName || "").toString();
+      const cleanFirst = rawFirst.toLowerCase().includes("undefined") ? "" : rawFirst.trim();
+      const cleanLast = rawLast.toLowerCase().includes("undefined") ? "" : rawLast.trim();
+      const rawFull = (u.full_name || "").toString();
+      const cleanFull = (!rawFull || rawFull.toLowerCase().includes("undefined"))
+        ? `${cleanFirst} ${cleanLast}`.trim() || u.email.split("@")[0]
+        : rawFull.trim();
+
+      return {
+        id: u.id || "usr_" + Date.now(),
+        email: u.email,
+        password: u.password,
+        first_name: cleanFirst,
+        surname: cleanLast,
+        full_name: cleanFull,
+        phone: u.phone || "",
+        wing: u.wing || "BOTH",
+        category: u.category || "standard",
+        membership_number: u.membership_number || "TPF-2026-0001",
+        roles: u.roles || ["Ordinary Member"],
+        total_contributions: Number(u.total_contributions) || 0,
+        contribution_count: Number(u.contribution_count) || 0,
+        created_at: u.created_at || new Date().toISOString(),
+        status: u.status || "active",
+      };
+    });
 }
 
 function sanitizeStoredLogs(logs: any[]): AuditLogEntry[] {

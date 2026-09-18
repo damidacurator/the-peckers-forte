@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, CORE_ADMIN_EMAILS } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,18 @@ import {
   CheckCircle2,
   AlertCircle,
   KeyRound,
-  Info
+  Info,
+  UserPlus
 } from "lucide-react";
 import { generateAndSendOtp, verifyOtpCode, maskEmail } from "@/lib/otp";
+import { ADMIN_TAB_SESSION_KEY } from "@/components/auth/AdminGuard";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "";
+  const isAdminRedirect = redirectUrl.startsWith("/admin");
+  const isAccessDenied = searchParams.get("denied") === "admin";
   const { validateCredentials, completeLoginAfterOtp } = useAuth();
 
   // Login steps: "credentials" -> "otp"
@@ -173,11 +179,36 @@ export default function LoginPage() {
       // OTP verified successfully! Complete session
       await completeLoginAfterOtp(email);
 
-      // Routing
-      if (CORE_ADMIN_EMAILS.includes(email.trim().toLowerCase())) {
-        router.push("/admin/gateway");
+      const cleanEmail = email.trim().toLowerCase();
+      const isCore = CORE_ADMIN_EMAILS.includes(cleanEmail);
+      let isExecutive = isCore;
+      try {
+        const raw = localStorage.getItem("tpf_registered_users");
+        if (raw) {
+          const list = JSON.parse(raw);
+          const found = list.find((u: any) => u.email.toLowerCase() === cleanEmail);
+          if (found?.roles?.some((r: string) => ["Super Admin", "ADMIN", "Executive"].includes(r))) {
+            isExecutive = true;
+          }
+        }
+      } catch (e) {}
+
+      // Routing logic
+      if (isExecutive) {
+        sessionStorage.setItem(ADMIN_TAB_SESSION_KEY, "true");
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push("/admin");
+        }
       } else {
-        router.push("/dashboard");
+        if (isAdminRedirect) {
+          router.push("/dashboard?denied=admin");
+        } else if (redirectUrl && !redirectUrl.startsWith("/admin")) {
+          router.push(redirectUrl);
+        } else {
+          router.push("/dashboard");
+        }
       }
     } catch (err: any) {
       setError(err?.message || "Failed to finalize session.");
@@ -228,6 +259,50 @@ export default function LoginPage() {
                 create a new account
               </Link>
             </p>
+          </div>
+
+          {/* Admin Clearance Required Notice */}
+          {isAdminRedirect && (
+            <div className="bg-amber-50 border border-amber-300 text-amber-900 p-3.5 rounded-xl text-xs space-y-1 shadow-sm animate-in fade-in">
+              <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                <Lock size={15} className="text-amber-700 shrink-0" />
+                <span>Executive Administrator Clearance Required</span>
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                Direct access to the Executive Administrative Console is protected. Please authenticate with authorized administrator credentials.
+              </p>
+            </div>
+          )}
+
+          {/* Access Denied Notice */}
+          {isAccessDenied && (
+            <div className="bg-red-50 border border-red-200 text-red-800 p-3.5 rounded-xl text-xs space-y-1 animate-in fade-in">
+              <div className="flex items-center gap-1.5 font-bold text-red-900">
+                <AlertCircle size={15} className="text-red-600 shrink-0" />
+                <span>Access Denied</span>
+              </div>
+              <p className="text-[11px] text-red-700 leading-relaxed">
+                The account you signed into does not have executive administrator privileges.
+              </p>
+            </div>
+          )}
+
+          {/* Dedicated Create Account Menu Option */}
+          <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-xl flex items-center justify-between gap-3 text-xs shadow-sm">
+            <div className="flex items-center gap-2 text-brand-darkBlue font-medium">
+              <UserPlus size={16} className="text-brand-blue shrink-0" />
+              <span>Don&apos;t want to log in?</span>
+            </div>
+            <Link href="/register">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="border-brand-blue text-brand-blue font-bold text-xs hover:bg-brand-blue hover:text-white transition"
+              >
+                Create Account Menu →
+              </Button>
+            </Link>
           </div>
 
           {error && (
@@ -439,5 +514,20 @@ export default function LoginPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[350px] flex flex-col items-center justify-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-blue" />
+          <p className="text-xs text-gray-500 font-medium">Loading authentication console...</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

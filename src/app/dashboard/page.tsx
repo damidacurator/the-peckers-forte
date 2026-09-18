@@ -35,9 +35,9 @@ export default function MemberDashboard() {
     const storedMember = getMemberByEmail(email);
     const allTxs = getStoredTransactions();
 
-    // Filter transactions made by this member
+    // Filter transactions made by this member strictly by email
     const userTxs = allTxs.filter(
-      (tx) => tx.customerEmail.toLowerCase() === email || tx.customerName.toLowerCase() === member?.full_name?.toLowerCase()
+      (tx) => tx.customerEmail && tx.customerEmail.trim().toLowerCase() === email
     );
     setMyTransactions(userTxs);
 
@@ -54,13 +54,20 @@ export default function MemberDashboard() {
     ? new Date(user.created_at).getFullYear()
     : new Date().getFullYear();
 
+  const welcomeName =
+    member?.first_name &&
+    !member.first_name.toLowerCase().includes("undefined") &&
+    member.first_name.trim().length > 0
+      ? member.first_name.trim()
+      : user?.email?.split("@")[0] || "Member";
+
   return (
     <div className="space-y-6 max-w-6xl pb-12">
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {member?.first_name || user?.email?.split("@")[0] || "Member"}
+            Welcome back, {welcomeName}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Membership ID: <span className="font-mono font-bold text-brand-blue">{member?.membership_number || "TPF-2026-0001"}</span> • Wing: <span className="uppercase font-semibold text-gray-700">{member?.wing || "BOTH"}</span>

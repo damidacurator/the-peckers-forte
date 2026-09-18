@@ -1,5 +1,10 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { AdminGuard } from "@/components/auth/AdminGuard";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <AdminGuard>
+      <DashboardLayout>{children}</DashboardLayout>
+    </AdminGuard>
+  );
 }

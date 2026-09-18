@@ -21,9 +21,17 @@ export default function PaymentsPage() {
   const [history, setHistory] = useState<GatewayTransaction[]>([]);
   const [selectedTx, setSelectedTx] = useState<GatewayTransaction | null>(null);
 
+  const loadUserHistory = () => {
+    if (!user?.email) return;
+    const all = getStoredTransactions();
+    const userEmail = user.email.trim().toLowerCase();
+    const myHistory = all.filter((tx) => tx.customerEmail?.trim().toLowerCase() === userEmail);
+    setHistory(myHistory);
+  };
+
   useEffect(() => {
-    setHistory(getStoredTransactions());
-  }, []);
+    loadUserHistory();
+  }, [user]);
 
   const handleStartPayment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,13 +43,11 @@ export default function PaymentsPage() {
   };
 
   const handlePaymentSuccess = (tx: GatewayTransaction) => {
-    setHistory(getStoredTransactions());
+    loadUserHistory();
   };
 
-  const customerName = member
-    ? `${member.firstName} ${member.lastName}`
-    : user?.name || "Valued Member";
-  const customerEmail = user?.email || "admin@thepeckerfortelp.com";
+  const customerName = member?.full_name || user?.email?.split("@")[0] || "Valued Member";
+  const customerEmail = user?.email || "";
 
   return (
     <div className="space-y-6 max-w-6xl pb-12">

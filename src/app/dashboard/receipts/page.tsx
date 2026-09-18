@@ -15,14 +15,14 @@ export default function ReceiptsPage() {
   const [selectedReceipt, setSelectedReceipt] = useState<GatewayTransaction | null>(null);
 
   useEffect(() => {
-    const all = getStoredTransactions();
-    if (user?.email) {
-      const email = user.email.toLowerCase();
-      const myTxs = all.filter((tx) => tx.customerEmail.toLowerCase() === email);
-      setReceipts(myTxs.length > 0 ? myTxs : all);
-    } else {
-      setReceipts(all);
+    if (!user?.email) {
+      setReceipts([]);
+      return;
     }
+    const all = getStoredTransactions();
+    const email = user.email.trim().toLowerCase();
+    const myTxs = all.filter((tx) => tx.customerEmail?.trim().toLowerCase() === email);
+    setReceipts(myTxs);
   }, [user]);
 
   const handlePrint = () => {

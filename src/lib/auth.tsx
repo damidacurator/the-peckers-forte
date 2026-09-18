@@ -162,6 +162,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   setUser(adminProfile.user);
                   setMember(adminProfile.member);
                 } else {
+                  const rawFirst = (parsed.member.first_name || "").toString();
+                  const rawLast = (parsed.member.surname || "").toString();
+                  const cleanFirst = rawFirst.toLowerCase().includes("undefined") ? "" : rawFirst.trim();
+                  const cleanLast = rawLast.toLowerCase().includes("undefined") ? "" : rawLast.trim();
+                  const rawFull = (parsed.member.full_name || "").toString();
+                  const cleanFull = (!rawFull || rawFull.toLowerCase().includes("undefined"))
+                    ? `${cleanFirst} ${cleanLast}`.trim() || parsed.user.email.split("@")[0]
+                    : rawFull.trim();
+
+                  parsed.member.first_name = cleanFirst;
+                  parsed.member.surname = cleanLast;
+                  parsed.member.full_name = cleanFull;
+
                   setUser(parsed.user);
                   setMember(parsed.member);
                 }
@@ -349,12 +362,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email_verified_at: new Date().toISOString(),
         created_at: matchedLocal.created_at || new Date().toISOString(),
       };
+      const rawFirst = (matchedLocal.first_name || "").toString();
+      const rawLast = (matchedLocal.surname || "").toString();
+      const cleanFirst = rawFirst.toLowerCase().includes("undefined") ? "" : rawFirst.trim();
+      const cleanLast = rawLast.toLowerCase().includes("undefined") ? "" : rawLast.trim();
+      const rawFull = (matchedLocal.full_name || "").toString();
+      const cleanFull = (!rawFull || rawFull.toLowerCase().includes("undefined"))
+        ? `${cleanFirst} ${cleanLast}`.trim() || cleanEmail.split("@")[0]
+        : rawFull.trim();
+
       const localMemberObj: MemberData = {
         id: matchedLocal.member_id || Math.floor(100 + Math.random() * 900),
         membership_number: matchedLocal.membership_number || "TPF-2026-0099",
-        surname: matchedLocal.surname || "",
-        first_name: matchedLocal.first_name || "",
-        full_name: matchedLocal.full_name || cleanEmail,
+        surname: cleanLast,
+        first_name: cleanFirst,
+        full_name: cleanFull,
         status: "active",
         wing: matchedLocal.wing || "both",
         email: matchedLocal.email,
@@ -421,6 +443,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       localStorage.removeItem(ACTIVE_SESSION_KEY);
+      sessionStorage.removeItem("tpf_admin_tab_authenticated");
       setUser(null);
       setMember(null);
       window.location.replace("/login");
@@ -436,14 +459,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ? "TPF-ADM-001"
       : `TPF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const fullName = `${data.firstName || data.first_name || ""} ${data.lastName || data.surname || ""}`.trim() || cleanEmail;
+    const rawFirst = (data.firstName || data.first_name || "").toString();
+    const rawLast = (data.lastName || data.surname || "").toString();
+    const cleanFirst = rawFirst.toLowerCase().includes("undefined") ? "" : rawFirst.trim();
+    const cleanLast = rawLast.toLowerCase().includes("undefined") ? "" : rawLast.trim();
+    const rawFull = (data.full_name || data.name || "").toString();
+    const fullName = (!rawFull || rawFull.toLowerCase().includes("undefined"))
+      ? `${cleanFirst} ${cleanLast}`.trim() || cleanEmail.split("@")[0]
+      : rawFull.trim();
 
     const newUserData = {
       id: "usr_" + Date.now(),
       email: cleanEmail,
       password: cleanPassword,
-      first_name: data.firstName || data.first_name || "",
-      surname: data.lastName || data.surname || "",
+      first_name: cleanFirst,
+      surname: cleanLast,
       full_name: fullName,
       phone: data.phone || "",
       wing: data.wing || "both",
@@ -452,8 +482,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       roles: isCoreAdmin
         ? ["Super Admin", "ADMIN", "Treasurer", "Secretary", "Executive"]
         : ["Ordinary Member"],
-      total_contributions: 0,
-      contribution_count: 0,
+      total_contributions: Number(data.total_contributions) || 0,
+      contribution_count: Number(data.contribution_count) || (data.total_contributions ? 1 : 0),
       created_at: new Date().toISOString(),
     };
 
@@ -467,11 +497,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Audit Log Entry
     logAuditEvent(
-      "New Member Account Registered",
+      data.total_contributions ? "Member Registered & ₦5,000 Fee Paid" : "New Member Account Registered",
       fullName,
       cleanEmail,
-      `New member account registered: ${cleanEmail} (Assigned ID: ${membershipNumber}, Wing: ${newUserData.wing})`,
-      "account_creation"
+      `New member account registered: ${cleanEmail} (Assigned ID: ${membershipNumber}, Wing: ${newUserData.wing}${data.total_contributions ? `, Registration Fee Paid: ₦${Number(data.total_contributions).toLocaleString()}` : ""})`,
+      data.total_contributions ? "payment" : "account_creation"
     );
 
     // Attempt Supabase sign up in the background

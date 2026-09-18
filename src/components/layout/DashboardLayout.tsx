@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardHeader } from "./DashboardHeader";
+import { MobileBottomNav } from "./MobileBottomNav";
 import { useAuth } from "@/lib/auth";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -30,14 +32,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-brand-bg">
-      <DashboardSidebar />
+      <DashboardSidebar
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
       <div className="flex flex-1 flex-col md:pl-64">
-        <DashboardHeader />
-        <main className="flex-1 p-4 md:p-8">
+        <DashboardHeader
+          onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        />
+        <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
           <div className="mx-auto max-w-6xl">
             {children}
           </div>
         </main>
+        <MobileBottomNav
+          onOpenMenu={() => setIsMobileMenuOpen(true)}
+        />
       </div>
     </div>
   );

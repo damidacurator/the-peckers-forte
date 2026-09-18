@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { getAllRegisteredMembers, MemberAccount } from "@/lib/members";
 import { getStoredTransactions, GatewayTransaction } from "@/lib/accelerex";
+import { assignUserRole } from "@/lib/roles";
 
 export default function AdminUsersPage() {
   const [members, setMembers] = useState<MemberAccount[]>([]);
@@ -54,6 +55,11 @@ export default function AdminUsersPage() {
         tx.customerName.toLowerCase() === m.full_name.toLowerCase()
     );
     setMemberTransactions(userTxs);
+  };
+
+  const handleRoleChange = (memberEmail: string, newRole: string) => {
+    assignUserRole(memberEmail, newRole);
+    setMembers(getAllRegisteredMembers());
   };
 
   return (
@@ -203,17 +209,33 @@ export default function AdminUsersPage() {
                         {m.wing}
                       </td>
 
-                      {/* Role */}
+                      {/* Role Selector */}
                       <td className="py-3 px-3">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        <select
+                          value={
                             m.roles?.includes("Super Admin") || m.roles?.includes("ADMIN")
-                              ? "bg-red-100 text-red-800"
-                              : "bg-blue-100 text-brand-blue"
+                              ? "Super Admin"
+                              : m.roles?.[0] || "Ordinary Member"
+                          }
+                          onChange={(e) => handleRoleChange(m.email, e.target.value)}
+                          className={`text-[11px] font-bold py-1 px-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-brand-blue cursor-pointer ${
+                            m.roles?.includes("Super Admin") || m.roles?.includes("ADMIN")
+                              ? "bg-red-50 text-red-800 border-red-200"
+                              : m.roles?.includes("Treasurer")
+                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                              : m.roles?.includes("Secretary")
+                              ? "bg-blue-50 text-brand-blue border-blue-200"
+                              : m.roles?.includes("Executive")
+                              ? "bg-purple-50 text-purple-800 border-purple-200"
+                              : "bg-slate-50 text-slate-700 border-slate-200"
                           }`}
                         >
-                          {m.roles?.[0] || "Member"}
-                        </span>
+                          <option value="Ordinary Member">Ordinary Member</option>
+                          <option value="Treasurer">Treasurer</option>
+                          <option value="Secretary">Secretary</option>
+                          <option value="Executive">Executive</option>
+                          <option value="Super Admin">Super Admin</option>
+                        </select>
                       </td>
 
                       {/* Status */}
