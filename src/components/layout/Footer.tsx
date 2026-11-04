@@ -21,11 +21,11 @@ export function Footer() {
             <div className="flex gap-4 mt-4">
               <a href="#" className="hover:text-white"><Globe size={20} /></a>
               <a 
-                href="https://wa.me/2348037221344" 
+                href="https://wa.me/2348033208009" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-emerald-400 transition-colors"
-                title="Chat on WhatsApp (+234 803 722 1344)"
+                title="Chat on WhatsApp (+234 803 320 8009)"
               >
                 <MessageCircle size={20} />
               </a>
@@ -63,26 +63,40 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
-                <span>123 Cooperative Way, Victoria Island, Lagos, Nigeria</span>
+                <span>23 Memud Ajani Cres, Ikotun, Lagos 102213, Lagos</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone size={18} className="text-brand-gold shrink-0" />
-                <a 
-                  href="https://wa.me/2348037221344" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-brand-gold transition-colors"
-                >
-                  +234 803 722 1344 (WhatsApp)
-                </a>
+              <li className="flex items-start gap-3">
+                <Phone size={18} className="text-brand-gold shrink-0 mt-0.5" />
+                <div className="flex flex-col space-y-1">
+                  <a 
+                    href="https://wa.me/2348033208009" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-brand-gold transition-colors"
+                  >
+                    +234 803 320 8009 (WhatsApp)
+                  </a>
+                  <a 
+                    href="tel:+13322006172" 
+                    className="hover:text-brand-gold transition-colors text-slate-400"
+                  >
+                    +1 (332) 200-6172
+                  </a>
+                  <a 
+                    href="tel:+447872535619" 
+                    className="hover:text-brand-gold transition-colors text-slate-400"
+                  >
+                    +44 7872 535619
+                  </a>
+                </div>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-brand-gold shrink-0" />
                 <a 
-                  href="mailto:admin@thepeckerfortelp.com" 
+                  href="mailto:info@thepeckersforte.com" 
                   className="hover:text-brand-gold transition-colors"
                 >
-                  admin@thepeckerfortelp.com
+                  info@thepeckersforte.com
                 </a>
               </li>
             </ul>

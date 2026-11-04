@@ -73,7 +73,7 @@ export default function ContactPage() {
           title: "Submission Error",
           description:
             errorData?.errors?.[0]?.message ||
-            "Unable to send message right now. Please reach out to admin@thepeckerfortelp.com or WhatsApp +2348037221344.",
+            "Unable to send message right now. Please reach out to info@thepeckersforte.com or WhatsApp +234 803 320 8009.",
           type: "error",
         });
       }
@@ -106,11 +106,9 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold text-lg mb-1">Our Office</h3>
                   <p className="text-gray-600 text-sm">
-                    123 Cooperative Way,
+                    23 Memud Ajani Cres, Ikotun,
                     <br />
-                    Victoria Island,
-                    <br />
-                    Lagos, Nigeria
+                    Lagos 102213, Lagos
                   </p>
                 </div>
               </CardContent>
@@ -122,20 +120,38 @@ export default function ContactPage() {
                   <MessageCircle size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg mb-1">WhatsApp & Phone</h3>
-                  <p className="text-gray-600 text-sm">
+                  <h3 className="font-bold text-lg mb-1">Phone & WhatsApp</h3>
+                  <div className="space-y-1.5 text-sm">
+                    <div>
+                      <a
+                        href="https://wa.me/2348033208009"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5"
+                      >
+                        +234 803 320 8009 <span className="text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-medium">WhatsApp</span>
+                      </a>
+                    </div>
+                    <div>
+                      <a
+                        href="tel:+13322006172"
+                        className="text-gray-600 hover:text-brand-blue"
+                      >
+                        +1 (332) 200-6172 <span className="text-xs text-gray-400">(USA)</span>
+                      </a>
+                    </div>
+                    <div>
+                      <a
+                        href="tel:+447872535619"
+                        className="text-gray-600 hover:text-brand-blue"
+                      >
+                        +44 7872 535619 <span className="text-xs text-gray-400">(UK)</span>
+                      </a>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
                     <a
-                      href="https://wa.me/2348037221344"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5"
-                    >
-                      +234 803 722 1344
-                    </a>
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <a
-                      href="https://wa.me/2348037221344"
+                      href="https://wa.me/2348033208009"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition"
@@ -143,7 +159,7 @@ export default function ContactPage() {
                       WhatsApp Chat
                     </a>
                     <a
-                      href="tel:+2348037221344"
+                      href="tel:+2348033208009"
                       className="inline-flex items-center px-2.5 py-1 rounded bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 transition"
                     >
                       Call Us
