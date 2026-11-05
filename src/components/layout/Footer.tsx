@@ -21,11 +21,11 @@ export function Footer() {
             <div className="flex gap-4 mt-4">
               <a href="#" className="hover:text-white"><Globe size={20} /></a>
               <a 
-                href="https://wa.me/2348033208009" 
+                href="https://wa.me/2348037221344" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-emerald-400 transition-colors"
-                title="Chat on WhatsApp (+234 803 320 8009)"
+                title="Chat on WhatsApp (+234 803 722 1344)"
               >
                 <MessageCircle size={20} />
               </a>
@@ -63,18 +63,24 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-brand-gold shrink-0 mt-0.5" />
-                <span>23 Memud Ajani Cres, Ikotun, Lagos 102213, Lagos</span>
+                <span>23 Cynthia Saka Crescent (Formerly Memud Ajani), New Olorunfemi Estate, Akesan-Egan Lagos</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone size={18} className="text-brand-gold shrink-0 mt-0.5" />
                 <div className="flex flex-col space-y-1">
                   <a 
-                    href="https://wa.me/2348033208009" 
+                    href="https://wa.me/2348037221344" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="hover:text-brand-gold transition-colors"
+                    className="hover:text-brand-gold transition-colors font-medium"
                   >
-                    +234 803 320 8009 (WhatsApp)
+                    +234 803 722 1344 (WhatsApp)
+                  </a>
+                  <a 
+                    href="tel:+2348033208009" 
+                    className="hover:text-brand-gold transition-colors text-slate-400"
+                  >
+                    +234 803 320 8009
                   </a>
                   <a 
                     href="tel:+13322006172" 
